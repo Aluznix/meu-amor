@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para Você 💜</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: #fff;
+      background:
+        linear-gradient(rgba(20, 8, 35, .58), rgba(20, 8, 35, .72)),
+        url("https://cdn.discordapp.com/attachments/1562914485897789532/1566178043423097013/image.png?ex=6afa0d77&is=6af8bbf7&hm=236c7c60e0d8157c1e4285f395c663341958ef22e13e39f560dfc95d1bbc1fa9&i=c88d3f9462664cbd") center/cover fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      padding: 24px 14px;
+    }
+    .pagina {
+      display: none;
+      width: 100%;
+      min-height: calc(100vh - 48px);
+      align-items: center;
+      justify-content: center;
+      animation: aparecer .7s ease;
+    }
+    .pagina.ativa { display: flex; }
+    .cartao {
+      width: min(100%, 520px);
+      padding: 38px 28px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 25px;
+      background: rgba(30, 12, 48, .72);
+      box-shadow: 0 15px 50px rgba(0,0,0,.35);
+      backdrop-filter: blur(8px);
+    }
+    h1 { font-size: clamp(2rem, 7vw, 3rem); margin: 0 0 18px; }
+    p { font-size: 1.18rem; line-height: 1.65; }
+    button {
+      margin-top: 20px;
+      border: 0;
+      border-radius: 30px;
+      padding: 14px 27px;
+      color: #3b174e;
+      background: #f4d9ff;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform .2s, background .2s;
+    }
+    button:hover { transform: scale(1.05); background: #fff; }
+    footer { margin-top: 28px; font-size: .95rem; }
+    .assinatura { margin-top: 18px; font-size: .82rem; opacity: .85; line-height: 1.6; }
+    .spotify { width: 100%; height: 152px; border: 0; border-radius: 12px; margin: 12px 0 18px; }
+    #frase { min-height: 76px; font-size: 1.2rem; font-style: italic; display:flex; align-items:center; justify-content:center; }
+    .coracao {
+      position: fixed;
+      bottom: -30px;
+      pointer-events: none;
+      z-index: 5;
+      animation: subir 5s linear forwards;
+      text-shadow: 0 2px 8px rgba(0,0,0,.3);
+    }
+    @keyframes subir {
+      from { transform: translateY(0) scale(.8) rotate(0); opacity: 1; }
+      to { transform: translateY(-110vh) scale(1.5) rotate(25deg); opacity: 0; }
+    }
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 480px) {
+      .cartao { padding: 30px 20px; }
+      p { font-size: 1.08rem; }
+    }
+  </style>
+</head>
+<body>
+  <section id="inicio" class="pagina ativa">
+    <main class="cartao">
+      <h1>Para Você 💜</h1>
+      <p>Voce é a luz na minha vida, minha melhor escolha.</p>
+      <button onclick="abrirPagina('musica')">Clique aqui 💜</button>
+      <footer>Foi feito com muito amor ❤️</footer>
+      <div class="assinatura">© 2026 | 𝔇𝔢𝔳 𝔏𝔲𝔦𝔷𝔞<br>Desenvolvedora</div>
+    </main>
+  </section>
+
+  <section id="musica" class="pagina">
+    <main class="cartao">
+      <h1>Uma música para você 💜</h1>
+      <iframe class="spotify"
+        src="https://open.spotify.com/embed/track/2o2xhyri4aJUtgMGkf5P0J?utm_source=generator"
+        title="Música especial no Spotify"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"></iframe>
+      <div id="frase" aria-live="polite"></div>
+      <button onclick="voltarInicio()">Voltar 💜</button>
+      <footer>Com todo meu carinho ❤️</footer>
+    </main>
+  </section>
+
+  <script>
+    const frases = [
+      "Conhecer você foi a melhor coisa que me aconteceu ❤️",
+      "Seu sorriso deixa tudo mais bonito.",
+      "Eu escolheria você de novo e de novo.",
+      "Você é mais que especial para mim. 💜"
+    ];
+
+    let indiceFrase = 0;
+    let intervaloFrases = null;
+    let intervaloCoracoes = null;
+
+    // Estes tempos definem a duração da sequência de frases (34 segundos).
+    // O player incorporado do Spotify não permite controlar o ponto de início/fim por esta página.
+    const startTime = 47;
+    const endTime = 81;
+    const clipDuration = endTime - startTime;
+
+    function abrirPagina(id) {
+      document.querySelectorAll('.pagina').forEach(pagina => pagina.classList.remove('ativa'));
+      document.getElementById(id).classList.add('ativa');
+      if (id === 'musica') iniciarFrases();
+    }
+
+    function iniciarFrases() {
+      pararFrases();
+      indiceFrase = 0;
+      const elemento = document.getElementById('frase');
+      elemento.textContent = frases[indiceFrase];
+
+      const duracaoPorFrase = (clipDuration * 1000) / (frases.length + 1);
+      intervaloFrases = setInterval(() => {
+        indiceFrase++;
+        if (indiceFrase < frases.length) {
+          elemento.textContent = frases[indiceFrase];
+        } else {
+          elemento.textContent = "Eu te amo muito ❤️";
+          pararFrases();
+        }
+      }, duracaoPorFrase);
+    }
+
+    function pararFrases() {
+      if (intervaloFrases) {
+        clearInterval(intervaloFrases);
+        intervaloFrases = null;
+      }
+    }
+
+    function voltarInicio() {
+      pararFrases();
+      document.querySelectorAll('.pagina').forEach(pagina => pagina.classList.remove('ativa'));
+      document.getElementById('inicio').classList.add('ativa');
+    }
+
+    function criarCoracao() {
+      const coracao = document.createElement('span');
+      coracao.className = 'coracao';
+      coracao.textContent = ['💜', '❤️', '💕', '💗'][Math.floor(Math.random() * 4)];
+      coracao.style.left = Math.random() * 100 + 'vw';
+      coracao.style.fontSize = (16 + Math.random() * 18) + 'px';
+      document.body.appendChild(coracao);
+      setTimeout(() => coracao.remove(), 5000);
+    }
+
+    intervaloCoracoes = setInterval(criarCoracao, 700);
+  </script>
+</body>
+</html>
